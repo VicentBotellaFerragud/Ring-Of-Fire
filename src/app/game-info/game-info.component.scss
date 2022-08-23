@@ -1,0 +1,10 @@
+mat-card {
+    padding-inline: 75px;
+    border-radius: 0;
+}
+
+mat-card-content {
+    @media (max-width: 1000px) {
+        font-size: 12px;
+    }
+}
