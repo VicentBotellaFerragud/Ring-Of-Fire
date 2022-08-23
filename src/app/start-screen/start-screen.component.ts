@@ -16,7 +16,7 @@ export class StartScreenComponent implements OnInit {
   }
 
   /**
-   * This function, called when the player clicks on "Start game" on the start screen, starts the game.
+   * Creates a new game in the firestore and navigates the user to it.
    */
   newGame() {
     let game = new Game();
