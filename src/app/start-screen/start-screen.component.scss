@@ -6,9 +6,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
     img {
         height: 100vh;
     }
+
     @media (max-width: 1000px) {
         overflow: hidden;
     }
@@ -21,18 +23,22 @@
     right: 0;
     display: flex;
     justify-content: center;
+
     img {
         width: 30vw;
         height: auto;
+
         @media (max-width: 1000px) {
             width: 320px;
         }
+
         @media (max-width: 350px) {
             width: 270px;
         }
+
         &:hover {
             filter: brightness(1.25);
             cursor: pointer;
-        }
+        }  
     }
 }
