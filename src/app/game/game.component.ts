@@ -56,7 +56,7 @@ export class GameComponent implements OnInit, OnDestroy {
   takeCard() {
 
     //If the player clicks on a card without having added one player at least...
-    if (this.game.players.length == 0) {
+    if (this.game.players.length === 0) {
 
       //An alert is displayed.
       alert('Add at least one player to start the game.');
@@ -155,7 +155,7 @@ export class GameComponent implements OnInit, OnDestroy {
       if (action) {
 
         //And this action was to click the "delete" button...
-        if (action == 'DELETE') {
+        if (action === 'DELETE') {
 
           //The player and his/her picture are removed from the players and playerImages arrays respectively.
           this.game.players.splice(playerId, 1);

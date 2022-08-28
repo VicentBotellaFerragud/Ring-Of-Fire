@@ -1,11 +1,17 @@
-<div class="start-screen">
+<div *ngIf="showContent" class="start-screen">
 
     <img src="assets/img/startbox.png">
-    
+
     <div class="start-label-box">
 
         <img (click)="newGame()" src="assets/img/startlabel.png">
 
     </div>
-    
+
+    <div *ngIf="displayBtn" class="join-label-box">
+
+        <button mat-button (click)="joinGame()">Or join a game</button>
+
+    </div>
+
 </div>

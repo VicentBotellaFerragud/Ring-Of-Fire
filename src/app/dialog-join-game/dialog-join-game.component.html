@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>Join a game</h1>
+
+<div mat-dialog-content>
+
+  <p>Please enter the code of the game you would like to join</p>
+
+  <mat-form-field>
+
+    <mat-label>Game code</mat-label>
+    <input matInput [(ngModel)]="gameCode">
+
+  </mat-form-field>
+
+</div>
+
+<div mat-dialog-actions>
+
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button (click)="joinGame()" [disabled]="gameCode.length !== 20">Join</button>
+  
+</div>

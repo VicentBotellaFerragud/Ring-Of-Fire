@@ -20,6 +20,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { PlayerMobileComponent } from './player-mobile/player-mobile.component';
 import { EditPlayerComponent } from './edit-player/edit-player.component';
+import { DialogJoinGameComponent } from './dialog-join-game/dialog-join-game.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { EditPlayerComponent } from './edit-player/edit-player.component';
     DialogAddPlayerComponent,
     GameInfoComponent,
     PlayerMobileComponent,
-    EditPlayerComponent
+    EditPlayerComponent,
+    DialogJoinGameComponent
   ],
   imports: [
     BrowserModule,
