@@ -50,12 +50,12 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Removes a card from the stack, updates the pickCardAnimation and currentPlayer variables and pushes the card the player has clicked on 
+   * Removes a card from the stack, updates the pickCardAnimation and currentPlayer variables and pushes the card the player has clicked 
    * into the playedCards array. It also calls the saveGame and displayStackAgain functions.
    */
   takeCard() {
 
-    //If the player clicks on a card without having added one player at least...
+    //If the player clicks a card without having added one player at least...
     if (this.game.players.length === 0) {
 
       //An alert is displayed.

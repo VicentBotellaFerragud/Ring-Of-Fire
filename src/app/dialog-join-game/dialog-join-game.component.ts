@@ -30,11 +30,17 @@ export class DialogJoinGameComponent implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * Gets all the games from the firestore database, adds to each one of them the property "customIdName" (which the firestore database
+   * actually sets) and pushes all customIdNames into the idsCollection array. Then, if the game the player wants to join exists, the
+   * function navigates him/her to it; and, if it doesn't exist, an alert is displayed. In both cases the dialogue box is closed at the
+   * end.
+   */
   joinGame() {
 
     this.firestore.collection('games').valueChanges({ idField: 'customIdName' }).pipe(takeUntil(this.destroy)).subscribe((games: any) => {
       
-      games.forEach(game => {
+      games.forEach((game: { customIdName: string; }) => {
         
         this.idsCollection.push(game.customIdName);
 
@@ -42,7 +48,7 @@ export class DialogJoinGameComponent implements OnInit, OnDestroy {
 
       let index = this.idsCollection.indexOf(this.gameCode);
 
-      index === -1 ? alert('The game you would like to join does not exist') : this.router.navigateByUrl('/game/' + this.gameCode);
+      index === -1 ? alert('The game you would like to join does not exist.') : this.router.navigateByUrl('/game/' + this.gameCode);
 
       this.dialogRef.close();
 
