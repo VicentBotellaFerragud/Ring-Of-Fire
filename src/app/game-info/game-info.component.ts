@@ -24,25 +24,29 @@ export class GameInfoComponent implements OnInit, OnChanges {
   ];
 
   title: string = '';
+
   description: string = '';
+  
   @Input() card: string;
 
   constructor() { }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void { }
 
   /**
-   * This function, called when the player clicks on the stack of cards, shows in the bottom section of the page what the player who 
-   * has just clicked has to do.
+   * Assigns to the input variable "card" (which by the way is determined by the game component -the parent component-) its corresponding 
+   * title and description.
    */
   ngOnChanges(): void {
+
     if (this.card) {
+
       let cardNumber = +this.card.split('_')[1];
       this.title = this.cardAction[cardNumber - 1].title;
       this.description = this.cardAction[cardNumber - 1].description;
+
     }
+
   }
 
 }

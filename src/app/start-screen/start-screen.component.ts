@@ -15,7 +15,7 @@ export class StartScreenComponent implements OnInit {
   ngOnInit(): void { }
 
   /**
-   * Creates a new game in the firestore database and navigates the user to it.
+   * Creates a new game in the firestore database and navigates the player to it.
    */
   newGame() {
 

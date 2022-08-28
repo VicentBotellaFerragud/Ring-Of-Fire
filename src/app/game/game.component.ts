@@ -1,32 +1,40 @@
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Game } from 'src/models/game';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { EditPlayerComponent } from '../edit-player/edit-player.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
 
-  game!: Game;
+  game: Game = new Game();
+
   gameId: string;
+
+  destroy = new Subject();
 
   constructor(private route: ActivatedRoute, private firestore: AngularFirestore, public dialog: MatDialog) { }
 
   /**
-   * This function, called at the start of the game, calls the function "newGame()" and connects all the variables of the "game" class to 
-   * the firestore.
+   * Gets the correponding game from the firestore database and assigns all its properties to the local variable game, which of course is 
+   * of the same type (Game).
    */
   ngOnInit(): void {
-    this.newGame();
+
     this.route.params.subscribe((params) => {
+
+      //The route id is retrieved so that it can be used to get the desired game collection (the route id is also the game id).
       this.gameId = params['id'];
-      this.firestore.collection('games').doc(this.gameId).valueChanges().subscribe((game: any) => {
+
+      this.firestore.collection('games').doc(this.gameId).valueChanges().pipe(takeUntil(this.destroy)).subscribe((game: Game) => {
+
         this.game.currentPlayer = game.currentPlayer;
         this.game.playerImages = game.playerImages;
         this.game.playedCards = game.playedCards;
@@ -34,53 +42,81 @@ export class GameComponent implements OnInit {
         this.game.stack = game.stack;
         this.game.pickCardAnimation = game.pickCardAnimation;
         this.game.currentCard = game.currentCard;
+
       });
+
     });
+
   }
 
   /**
-   * This function, called at the start of the game, connects the "game" class to this component.
-   */
-  newGame() {
-    this.game = new Game;
-  }
-
-  /**
-   * This function, called each time the player clicks on the stack of cards, removes a card from the stack, updates the variables 
-   * "pickCardAnimation" and "currentPlayer" and adds the card the player has clicked on to the array "playedCards". It also calls the 
-   * "saveGame()" function to save the changes the player makes and the "displayStackAgain()" function.
+   * Removes a card from the stack, updates the pickCardAnimation and currentPlayer variables and pushes the card the player has clicked on 
+   * into the playedCards array. It also calls the saveGame and displayStackAgain functions.
    */
   takeCard() {
-    if (!this.game.pickCardAnimation && this.game.players.length > 0) {
-      this.game.currentCard = this.game.stack.pop();
-      this.game.pickCardAnimation = true;
-      this.saveGame();
-    }
-    if (this.game.players.length > 0) {
-      this.game.currentPlayer++;
-      this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
-      this.saveGame();
-    }
+
+    //If the player clicks on a card without having added one player at least...
     if (this.game.players.length == 0) {
+
+      //An alert is displayed.
       alert('Add at least one player to start the game.');
+
     }
+
+    //If the card animation is not running and there is at least one player...
+    if (!this.game.pickCardAnimation && this.game.players.length > 0) {
+
+      this.game.currentCard = this.game.stack.pop();
+
+      //The card animation is triggered.
+      this.game.pickCardAnimation = true; 
+
+      //The next player becomes the currentPlayer.
+      this.game.currentPlayer++; 
+
+      //When currentPlayer is going to exceed the number of players (- 1) this makes sure that the currentPlayer variable is assigned again 
+      //to the first player.
+      this.game.currentPlayer = this.game.currentPlayer % this.game.players.length; 
+
+      //The changes are saved in the firestore database.
+      this.saveGame();
+
+    }
+
+    //After one second...
     setTimeout(() => {
+
+      //And also only if there is at least one player...
       if (this.game.players.length > 0) {
-        this.game.playedCards.push(this.game.currentCard);
-        this.game.pickCardAnimation = false;
-        this.displayStackAgain();
-        this.saveGame();
+
+        //The clicked card is pushed into the playedCards array.
+        this.game.playedCards.push(this.game.currentCard); 
+
+        //The card animation is ended.
+        this.game.pickCardAnimation = false; 
+
+        //The displayStackAgain function is called in case the stack becomes empty.
+        this.displayStackAgain(); 
+
+        //The changes are saved in the firestore database.
+        this.saveGame(); 
+
       }
+
     }, 1000);
+
   }
 
   /**
-   * This function, only called when there are no cards left in the stack, resets the variables of the "game" class and adds 52 cards 
-   * back to the stack so that the game can be played again.
+   * Displays an alert, resets all game properties and fills the card stack again... But only if the card stack is empty (meaning the 
+   * playedCards array has reached a length of 52).
    */
   displayStackAgain() {
-    if (this.game.playedCards.length == 52) {
+
+    if (this.game.playedCards.length === 52) {
+
       alert('Congratulations, you have completed the game. If you want to play again, click on the "okay" button in this alert');
+
       this.game.players = [];
       this.game.playerImages = [];
       this.game.stack = [];
@@ -88,65 +124,112 @@ export class GameComponent implements OnInit {
       this.game.currentPlayer = 0;
       this.game.pickCardAnimation = false;
       this.game.currentCard = '';
+
       for (let i = 1; i < 14; i++) {
+
         this.game.stack.push('spade_' + i);
         this.game.stack.push('hearts_' + i);
         this.game.stack.push('clubs_' + i);
         this.game.stack.push('diamonds_' + i);
+
       }
+
     }
+
   }
 
   /**
-   * This function, called when the player clicks on any player's name or avatar, opens a dialogue box with different images from which 
-   * the player can choose to have as avatar. Clicking on any of these images will change the player's profile picture to that image. 
-   * If, on the contrary, the "Delete player" button is clicked, both the picture and the player's name will be removed from the "player" 
-   * and "playerImages" arrays and, of course, from the screen. Finally the function "saveGame()" is called to save the changes.
-   * @param playerId - This is the id of the player and the picture that are about to be removed or edited (although only the picture
-   * can be edited).
+   * Opens the EditPlayerComponent and, when the player closes it, it assigns to the clicked player the by-the-player-clicked picture.
+   * @param playerId - This is the passed-in id (the id of the clicked player).
    */
   editPlayer(playerId: number) {
+
+    //Opens the EditPlayerComponent.
     const dialogRef = this.dialog.open(EditPlayerComponent);
-    dialogRef.afterClosed().subscribe((change: string) => {
-      if (change) {
-        if (change == 'DELETE') {
+
+    //And when it closes...
+    dialogRef.afterClosed().subscribe((action: string) => {
+
+      //If the player has performed an action (meaning the player has either clicked the "delete" button or any picture within the 
+      //EditPlayerComponent)...
+      if (action) {
+
+        //And this action was to click the "delete" button...
+        if (action == 'DELETE') {
+
+          //The player and his/her picture are removed from the players and playerImages arrays respectively.
           this.game.players.splice(playerId, 1);
           this.game.playerImages.splice(playerId, 1);
+
+        //And this action was to click any of the pictures...
         } else {
-          this.game.playerImages[playerId] = change;
+
+          //The clicked picture becomes the new player avatar.
+          this.game.playerImages[playerId] = action;
+
         }
+
+        //The changes are saved in the firestore database.
         this.saveGame();
+
       }
+
     });
+
   }
 
   /**
-   * This function, called when the player clicks on the "+" button, opens a dialogue box with an input to be filled in by the player. 
-   * When the player fills in the field with a name and clicks on "Ok" the name is added to the array "players" and appears on the screen. 
-   * If the name is longer than 11 characters it is not added to the array and therefore will not appear on the screen. Finally the function
-   * "saveGame()" is called to save the changes.
+   * Opens the DialogAddPlayerComponent and, when the player closes it, it adds a new player and a new picture to the players and
+   * playerImages arrays respectively (but only if the player has entered a valid name -a name between 1 and 11 characters-).
    */
   openDialog(): void {
+
+    //Opens the DialogAddPlayerComponent.
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
+
+    //And when it closes...
     dialogRef.afterClosed().subscribe((name: string) => {
+
+      //If the by-the-player-entered name has more than 11 characters...
+      if (name && name.length > 11) {
+
+        //An alert is displayed.
+        alert("We are sorry, but the player's name cannot be longer than 11 characters.");
+
+      }
+
+      //If the by-the-player-entered name has between 1 and 11 characters...
       if (name && name.length > 0 && name.length < 12) {
+
+        //A new player and a new picture are pushed into the players and playerImages arrays respectively.
         this.game.players.push(name);
         this.game.playerImages.push('young-man.png');
+
+        //The changes are saved in the firestore database.
         this.saveGame();
+
       }
-      if (name.length > 11) {
-        alert("We are sorry, but the player's name cannot be longer than 11 characters.");
-      }
+
     });
+
   }
 
   /**
-   * This function, called every time a change is made to the web site, saves the change.
+   * Saves the changes in the firestore database.
    */
   saveGame() {
+
     this.firestore.collection('games').doc(this.gameId).update(this.game.toJson());
+
   }
-  
+
+  /**
+   * Sets the local variable "destroy" to "true" so that all observables in the component are unsubscribed when this is "destroyed".
+   */
+  ngOnDestroy(): void {
+
+    this.destroy.next(true);
+
+  }
+
 }
-
-

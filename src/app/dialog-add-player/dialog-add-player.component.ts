@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dialog-add-player',
@@ -12,14 +12,15 @@ export class DialogAddPlayerComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<DialogAddPlayerComponent>) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   /**
-   * This function, called when the player clicks on "No Thanks", closes the dialogue box.
+   * Closes the dialogue box when the player clicks the "No Thanks" button.
    */
   onNoClick(): void {
+
     this.dialogRef.close();
+
   }
   
 }

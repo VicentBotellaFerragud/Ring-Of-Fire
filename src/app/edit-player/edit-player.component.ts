@@ -12,7 +12,6 @@ export class EditPlayerComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<EditPlayerComponent>) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
 }

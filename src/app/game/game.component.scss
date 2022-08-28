@@ -2,7 +2,6 @@
     width: 100vw;
     height: 100vh;
     max-width: 100%;
-    //background-image: url("/assets/img/board.jpg");
     background-image: url("../../assets/img/background.jpg");
     background-size: cover;
     display: flex;
@@ -12,6 +11,7 @@
 
 .card-stack {
     position: relative;
+
     img {
         position: absolute;
         width: 120px;
@@ -21,6 +21,7 @@
 .top-card {
     cursor: pointer;
     transition: all 125ms ease-in-out;
+    
     &:hover {
         transform: scale(1.1) translateY(-10px);
     }
@@ -64,26 +65,13 @@
     bottom: 12px;
 }
 
-/*
-.pin-bottom {
-    position: absolute;
-    bottom: 32px;
-    right: 450px;
-    left: 100px;
-    @media (max-width: 720px) {
-        bottom: 0;
-        right: 0;
-        left: 0;
-    }
-}
-*/
-
 .pin-bottom {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     text-align: center;
+
     @media (max-width: 720px) {
         bottom: 0;
         right: 0;
@@ -103,6 +91,7 @@
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
+
     app-player-mobile {
         margin-left: 8px;
         margin-right: 0;
@@ -118,6 +107,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: calc(100vh - 80px);
+
     app-player {
         margin-top: 24px;
     }

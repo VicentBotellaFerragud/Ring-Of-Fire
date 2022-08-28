@@ -6,16 +6,19 @@
     border-top-left-radius: 50px;
     border-bottom-left-radius: 50px;
     font-family: monospace;
+
     img {
         width: 70px;
         height: 70px;
         object-fit: cover;
         border-radius: 100%;
     }
+
     span {
         font-size: 32px;
         margin-left: 16px;
     }
+    
     &:hover {
         cursor: pointer;
         filter: brightness(1.15);
